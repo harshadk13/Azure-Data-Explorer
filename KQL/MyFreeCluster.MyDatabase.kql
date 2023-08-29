@@ -1,0 +1,135 @@
+﻿// CREATE TABLE
+.create table BigMart(ProductID:string, Weight:decimal, FatContent:string, ProductVisibility:decimal, ProductType:string, MRP:decimal, OutletID:string, EstablishmentYear:int, OutletSize:string, LocationType:string, OutletType:string, State:string) 
+
+// SELECT table
+BigMart
+
+// TOTAL SALES
+
+BigMart
+| summarize Sales=sum(MRP)
+| project Sales
+
+// AVERAGE WEIGHT OF PRODUCT
+
+BigMart
+| summarize AvgWeight=avg(Weight)
+| project AvgWeight
+
+// AVERAGE PRODUCT VISIBILITY
+
+BigMart
+| summarize AverageVisibility=avg(ProductVisibility)
+| project AverageVisibility
+
+// PRODUCT TYPE ANALYSIS
+
+BigMart
+|count
+
+BigMart
+| summarize TotalSales=sum(MRP) by ProductType
+| project ProductType, TotalSales
+| render table  
+
+BigMart
+| where (State == "Maharashtra") // For Particular State
+| summarize TotalSales=sum(MRP) by ProductType
+| project ProductType, TotalSales
+| render barchart  with(title="Sales by Product Type for Maharashtra")
+
+BigMart
+| summarize TotalSales=sum(MRP) by ProductType, State // For All State
+| project State, ProductType, TotalSales
+| project-rename ['state']=State
+| render columnchart with(title="Sales by Product Type")
+
+// OUTLET PERFORMANCE 
+
+BigMart
+| summarize TotalSales=sum(MRP) by OutletID
+| project OutletID, TotalSales
+| render columnchart 
+
+// LOCATION ANALYSIS
+
+BigMart
+| summarize TotalSales=sum(MRP) by LocationType
+| project LocationType, TotalSales
+| render piechart 
+
+BigMart
+| where (State == "Kerala")
+| summarize TotalSales=sum(MRP) by LocationType
+| project LocationType, TotalSales
+
+// OUTLET TYPE ANALYSIS
+
+BigMart
+| summarize TotalSales=sum(MRP) by OutletType
+| project OutletType, TotalSales
+
+
+// REGIONAL ANALYSIS
+
+BigMart
+| summarize TotalSales=sum(MRP) by State
+| project State, TotalSales
+| render piechart 
+
+// OUTLET PERFORMANCE BY ESTABLISHMENT YEAR
+
+BigMart
+| summarize TotalSales=sum(MRP) by EstablishmentYear
+| project EstablishmentYear, TotalSales
+| render areachart 
+
+// OUTLET SIZE ANALYSIS
+
+BigMart
+| summarize TotalSales=sum(MRP) by OutletSize
+| project OutletSize, TotalSales
+
+// OUTLET TYPE MARKET SHARE
+
+BigMart
+| summarize TotalSales=sum(MRP) by OutletType
+| project OutletType, TotalSales
+| render barchart 
+
+// TOP SELLING PRODUCT
+
+BigMart
+| summarize TotalSales=sum(MRP) by ProductID
+| project ProductID, TotalSales
+| sort by TotalSales desc nulls first
+| take 1
+
+// LEAST SELLING PRODUCT
+
+BigMart
+| summarize TotalSales=sum(MRP) by ProductID
+| project ProductID, TotalSales
+| sort by TotalSales asc nulls first
+| take 1
+
+// AVERAGE SALES PER PRODUCT
+
+BigMart
+| summarize AverageSalesPerProduct=avg(MRP) by ProductID
+| project ProductID, AverageSalesPerProduct 
+
+// SALES BY product type, outlet, location type, outlet type, state
+            // COLOUMN NAMES: ProductType, OutletID, LocationType, OutletType, State
+
+BigMart
+| summarize TotalSales=sum(MRP) by LocationType
+| project LocationType, TotalSales
+
+// SALES GROWTH OVER TIME 
+
+BigMart
+| summarize TotalSales=sum(MRP) by EstablishmentYear
+| project EstablishmentYear, TotalSales
+| render linechart 
+
